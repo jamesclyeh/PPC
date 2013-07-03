@@ -9,5 +9,10 @@ class User(db.Model):
   email = db.Column(db.String(120), unique = True)
   phone_number = db.Column(db.String(32))
 
+  def __init__(self, name, role, email, phone_number):
+    self.name = name
+    self.role = role
+    self.email = email
+    self.phone_number = phone_number
   def __repr__(self):
     return '<User %r>' % (self.name)
