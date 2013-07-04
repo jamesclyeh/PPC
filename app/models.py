@@ -2,6 +2,7 @@ from app import db
 
 CARE_GIVER = 0
 PATIENT = 1
+
 class User(db.Model):
   id = db.Column(db.Integer, primary_key = True)
   name = db.Column(db.String(64), index = True, unique = True)
@@ -14,5 +15,4 @@ class User(db.Model):
     self.role = role
     self.email = email
     self.phone_number = phone_number
-  def __repr__(self):
-    return '<User %r>' % (self.name)
+

@@ -1,5 +1,9 @@
 import os
+
+from app import models
 from flask import Flask, render_template
+from flask.ext.sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -11,7 +15,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',
 @app.route('/')
 def hello():
   return 'Hello World'#render_template(app.root_path + '/static/form/form.html')
-@app.route('/initDb')
-def initDb():
-  db = SQLAlchemy(app)
-  return None
+
+@app.route('/viewUsers')
+def dbTest():
+  users = models.User.query.all()
+  info_str = 'Num users: ' + str(len(users)) + '<br>'
+  info_str += '<br>Users:<br>'
+  info_str += '<br>'.join([user.name for user in users])
+  return info_str
