@@ -30,7 +30,7 @@ class Prescription(db.Model):
   end_date = db.Column(db.DateTime)
   __table_args__ = (db.UniqueConstraint('patient_id', 'drug'),)
 
-  def __init(self, patient_id, caregiver_id, drug, consumption_interval, dosage, start_date, end_date):
+  def __init__(self, patient_id, caregiver_id, drug, consumption_interval, dosage, start_date, end_date):
     self.patient_id = patient_id
     self.caregiver_id = caregiver_id
     self.drug = drug
