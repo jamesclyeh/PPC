@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',
 
 @app.route('/')
 def hello():
-  return 'Hello World'#render_template(app.root_path + '/static/form/form.html')
+  return render_template('form.html')
 
 @app.route('/viewUsers')
 def dbTest():
