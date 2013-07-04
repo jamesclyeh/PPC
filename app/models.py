@@ -21,8 +21,8 @@ class User(db.Model):
 class Prescription(db.Model):
   __tablename__ = 'prescription'
   id = db.Column(db.Integer, primary_key=True)
-  patient_id = db.Column(db.String(64), db.ForeignKey('user.id'), index=True)
-  caregiver_id = db.Column(db.String(64), db.ForeignKey('user.id'), index=True)
+  patient_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+  caregiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
   drug = db.Column(db.String(120))
   consumption_interval = db.Column(db.Integer)
   dosage = db.Column(db.Integer)
