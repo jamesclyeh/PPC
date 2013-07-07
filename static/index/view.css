@@ -1,20 +1,66 @@
 body
 {
-    background:#505050;
-    margin:0px;
+    background: #ffffff;
+    margin: 0px;
 }
+
 #banner
 {
-    background:#ffff00;
-    height:100px;
-    margin:0px;
-    border:0px;
-    padding:0px;
-    line-height:100px;
+    background: #cccccc;
+    height: 100px;
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    line-height: 100px;
 }
 
 #username
 {
-    margin:0px;
+    margin: 0px;
+}
 
+#event_bulletin
+{
+    background: #cccccc;
+    height: 200px;
+    margin: 16px;
+    position: relative; 
+}
+
+#event_title
+{
+    background: #ffffff;
+    margin: 0px;
+    border: 0px;
+    height: 40pxi;
+    width: 150px;
+    line-height: 40px;
+    text-align: center;
+    position: relative;
+    top: 10px;
+    left: 10px;
+}
+
+#event_title_text
+{
+   margin: 0px; 
+}
+
+#event_table
+{
+   position: relative;
+   top: 20px;
+   width: 90%;
+   margin: 0 auto;
+}
+
+#timestamp
+{
+    text-align: right;
+}
+
+#event_icon
+{
+    width: 50px;
+    height: 50px;
 }
