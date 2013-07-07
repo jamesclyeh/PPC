@@ -1,20 +1,25 @@
-body
-{
-    background:#505050;
-    margin:0px;
+body{
+    background: #505050;
+    margin: 0px;
+    margin-bottom : 50px;
 }
 #banner
 {
-    background:#ffff00;
-    height:100px;
-    margin:0px;
-    border:0px;
-    padding:0px;
-    line-height:100px;
+    background: #ffff00;
+    height: 100px;
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    line-height: 100px;
+    position: relative;
+}
+#tabs{
+    position: relative;
+    margin: 10px;
+    top: 20px;
 }
 
-#username
-{
-    margin:0px;
-
+#username{
+    margin-top: 0px;
+    margin-left: 20px;
 }
