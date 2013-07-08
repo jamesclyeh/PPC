@@ -2,7 +2,7 @@ import json
 import os
 
 from app import models
-from flask import Flask, render_template
+from flask import Flask, render_template, Response
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -17,10 +17,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',
 def hello():
   return render_template('index.html')
 
-@app.route('/viewUsers')
+@app.route('/viewUsers', methods=['GET'])
 def dbTest():
   users = models.User.query.all()
   prescriptions = models.Prescription.query.all()
   ret_str = json.dumps({'Users': [models.serialize(user) for user in users]}) + '<br>'
   ret_str += json.dumps({'Prescriptions': [models.serialize(prescription) for prescription in prescriptions]}, default=models.custom_parser) + '<br>'
-  return ret_str
+  response = ret_str
+  resp = Response(ret_str, status=200, mimetype='application/json')
+  return resp

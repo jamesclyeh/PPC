@@ -12,6 +12,14 @@
        $(document).ready(function() {
          $("#tabs").tabs();
          });
+       $.ajax({
+         type: "GET",
+         url: "viewUsers",
+         complete: (function(msg) {
+           console.log(msg)
+           alert( "Data Saved: " + msg );
+           })
+         });
        }) (jQuery);
 </script>
 </head>
