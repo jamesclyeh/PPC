@@ -20,7 +20,7 @@ def hello():
 @app.route('/viewUsers')
 def dbTest():
   users = models.User.query.all()
-#  info_str = 'Num users: ' + str(len(users)) + '<br>'
-#  info_str += '<br>Users:<br>'
-#  info_str += '<br>'.join([user.name for user in users])
-  return json.dumps({'Users': [models.serialize(user) for user in users]})
+  prescriptions = models.Prescription.query.all()
+  ret_str = json.dumps({'Users': [models.serialize(user) for user in users]}) + '<br>'
+  ret_str += json.dumps({'Prescriptions': [models.serialize(prescription) for prescription in prescriptions]}, default=models.custom_parser) + '<br>'
+  return ret_str
