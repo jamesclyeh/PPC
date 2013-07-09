@@ -41,6 +41,26 @@ class Prescription(db.Model):
     self.start_date = start_date
     self.end_date = end_date
 
+class ArchivedPrescription(db.Model):
+  __tablename__ = 'archived_prescription'
+  id = db.Column(db.Integer, primary_key=True)
+  patient_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+  caregiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+  drug = db.Column(db.String(120))
+  consumption_interval = db.Column(db.Integer)
+  dosage = db.Column(db.Integer)
+  start_date = db.Column(db.DateTime)
+  end_date = db.Column(db.DateTime)
+
+  def __init__(self, patient_id, caregiver_id, drug, consumption_interval, dosage, start_date, end_date):
+    self.patient_id = patient_id
+    self.caregiver_id = caregiver_id
+    self.drug = drug
+    self.consumption_interval = consumption_interval
+    self.dosage = dosage
+    self.start_date = start_date
+    self.end_date = end_date
+
 class DrugInventory(db.Model):
   __tablename__ = 'drug_inventory'
   id = db.Column(db.Integer, primary_key=True)
