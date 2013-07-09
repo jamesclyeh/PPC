@@ -21,8 +21,8 @@ def hello():
 def dbTest():
   users = models.User.query.all()
   prescriptions = models.Prescription.query.all()
-  ret_str = json.dumps({'Users': [models.serialize(user) for user in users]}) + '<br>'
-  ret_str += json.dumps({'Prescriptions': [models.serialize(prescription) for prescription in prescriptions]}, default=models.custom_parser) + '<br>'
+  #ret_str = json.dumps({'Users': [models.serialize(user) for user in users]}) + '<br>'
+  ret_str = json.dumps({'Prescriptions': [models.serialize(prescription) for prescription in prescriptions]}, default=models.custom_parser)
   response = ret_str
   resp = Response(ret_str, status=200, mimetype='application/json')
   return resp
