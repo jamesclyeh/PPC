@@ -9,22 +9,47 @@
 <title>Prescription Modification</title>
 <script type="text/javascript">
       (function($) {
-       $(document).ready(function() {
-         $("#tabs").tabs();
-       });
-       $.ajax({
-         type: "GET",
-         url: "viewUsers",
-         contentType: "application/JSON",
-         complete: (function(data) {
-           $('#text1').text(data.responseText);
-           })
-         });
-       }) (jQuery);
+        $(document).ready(function() {
+          $("#tabs").tabs();
+          getusers();
+        });
+
+        function eventcheck(data) {
+          var array = {};
+          for(key in data) {
+            $.each(data[key], function(key,value) {
+              array[key] = value;
+            });
+          }
+          return(array);
+        }
+        function getusers() {
+          $.ajax({
+              type: "GET",
+              url: "viewUsers",
+              contentType: "application/JSON",
+              complete: (function(data) {
+                var response = JSON.parse(data.responseText);
+                var array = eventcheck(response.Prescriptions);
+                var src = '';
+                if(array.initial_stock - array.stock < 5) {
+                  src = '';
+                }
+                else {
+                  src = '<img class="icon" src="../static/images/warning.png"/>';
+                }
+                alert(src);
+                $('#event_icon1').prepend(src);
+                $('#event_text1').text("Your current dosage for " + array.drug + " is " + array.dosage);
+                $('#event_timestamp1').text(array.end_date);
+              })
+          });
+        }
+      }) (jQuery);
 </script>
 </head>
 <body>
-<div id="banner">
+<div width="100%" id="banner">
   <h1 id ="username">Clarence Chow</h1>
 </div>
 
@@ -35,19 +60,18 @@
   </div>
   <table id="event_table">
     <tr>
-    <td id = "event_icon"></td>
-    <td id="text1">event1</td>
-    <td id="timestamp">timestamp1</td>
+      <td id="event_icon1"></td>
+      <td id="event_text1">event1</td>
+      <td id="event_timestamp1">timestamp1</td>
     </tr>
     <tr>
-    <td id = "event_icon" onLoad="AddImage();"></td>
-    <td>event2</td>
-    <td id="timestamp">timestamp2</td>
+      <td id="event_icon2" onLoad="AddImage();"></td>
+      <td id="event_text2">event2</td>
+      <td id="event_timestamp2">timestamp2</td>
     </tr>
   </table>
-
-
 </div>
+
 <div id="tabs">
        <ul>
          <li><a href="#tabs-1">Nunc tincidunt</a></li>
