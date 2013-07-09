@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 
@@ -5,6 +6,7 @@ from app import models
 from flask import (
   Flask,
   render_template,
+  request,
   Response)
 from flask.ext.sqlalchemy import SQLAlchemy
 from app.models import Prescription
@@ -35,3 +37,17 @@ def getUserData(user_id):
   resp = Response(json.dumps({'User': models.serialize(user)}), status=200)
   resp.mimetype = 'application/json'
   return resp
+
+@app.route('/updateInventory', methods=['PUT'])
+def updateInventory():
+  print '#$&$%^&*$%^&*('
+  print request
+  prescription_id = request.json['prescription_id']
+  refill_amount = request.json.get('refill', 0)
+  latest_record = db.session.query(models.DrugInventory).order_by(models.DrugInventory.time_stamp.desc())[0]
+  prescription = Prescription.query.get(prescription_id)
+  new_amount = latest_record.inventory + refill_amount if refill_amount else latest_record.inventory - prescription.dosage
+  record = models.DrugInventory(prescription_id, new_amount, datetime.datetime.now())
+  db.session.add(record)
+  db.session.commit()
+  return Response('', status=200)

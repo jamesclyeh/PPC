@@ -64,12 +64,14 @@ class ArchivedPrescription(db.Model):
 class DrugInventory(db.Model):
   __tablename__ = 'drug_inventory'
   id = db.Column(db.Integer, primary_key=True)
-  prescription_id = db.Column(db.Integer, db.ForeignKey('prescription.id'), index=True, unique=True)
+  prescription_id = db.Column(db.Integer, db.ForeignKey('prescription.id'), index=True)
   inventory = db.Column(db.Integer)
+  time_stamp = db.Column(db.DateTime)
 
-  def __init__(self, prescription_id, inventory):
+  def __init__(self, prescription_id, inventory, date):
     self.presciption_id = prescription_id
     self.inventory = inventory
+    self.time_stamp = date
 
 class MachineUsers(db.Model):
   __tablename__ = 'machine_users'
