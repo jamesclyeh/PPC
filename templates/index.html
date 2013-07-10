@@ -33,10 +33,12 @@
         })
       });
     });
-  $('#druglist').on('change', function() {
-    var index = this.selectedIndex - 1;
-    $('#update_med_name').val(prescriptions[index+1].drug);
+
+    $('#druglist').on('change', function() {
+      var index = this.selectedIndex - 1;
+      $('#update_med_name').val(prescriptions[index].drug);
     });
+
   });
 
   function objectify(data) {
@@ -48,23 +50,47 @@
     }
     return(array);
   }
+  function eventnotice(status,drug,remaining_dosage) {
+    var texthtml = "<tr>";
+    if(status == 'error') {
+      texthtml += '<td><img class="icon" src="../static/images/error.png"/></td>' +
+                  '<td>Prescription for ' + drug + ' is empty. Please refill immediately.</td>' +
+                  '<td>insert time</td>';
+    }
+    else if(status == 'warning') {
+      texthtml += '<td><img class="icon" src="../static/images/warning.png"/></td>' +
+                  '<td>Prescription for ' + drug + ' is low, ' + remaining_dosage + ' more dosages left.</td>' +
+                  '<td>insert time</td>';
+    }
+    texthtml += "</tr>";
+    $('#event_table').append(texthtml);
 
+  }
   function eventcheck() {
     $.ajax({
         type: "GET",
         url: "users/1/prescriptions",
         success: (function(data) {
-          var array = objectify(data.Prescriptions);
-          var src = '';
-          if(array.initial_stock - array.stock < 5) {
-            src = '';
+          var prescriptions = objectify(data);
+          for(key in prescriptions) {
+            $.ajax({
+                type: "GET",
+                url: "prescriptions/" + prescriptions[key].id + "/inventory",
+                success: (function(inventory) {
+                  if((inventory - prescriptions[key].dosage) < 0) {
+                    eventnotice('error', prescriptions[key].drug, '0');
+                  }
+                  else if((inventory - 3*prescriptions[key].dosage) < 0) {
+                    eventnotice('warning', prescriptions[key].drug, inventory/prescriptions[key].dosage);
+                  }
+                }),
+                error: (function(xhr, status, errormsg) {
+                  console.log(xhr);
+                  console.log(status);
+                  $('#errormsg').text(status + " " + errormsg);
+                })
+            });    
           }
-          else {
-            src = '<img class="icon" src="../static/images/warning.png"/>';
-          }
-          $('#event_icon1').prepend(src);
-          $('#event_text1').text("Your current dosage for " + array.drug + " is " + array.dosage);
-          $('#event_timestamp1').text(array.end_date);
         }),
         error: (function(xhr, status, errormsg) {
           console.log(xhr);
@@ -72,6 +98,7 @@
           $('#errormsg').text(status + " " + errormsg);
         })
     });
+    
   }
 
   function updatedruglist() {
@@ -130,16 +157,6 @@
     <h4 id="event_title_text">Event Bulletin</h4>
   </div>
   <table id="event_table">
-    <tr>
-      <td id="event_icon1"></td>
-      <td id="event_text1">event1</td>
-      <td id="event_timestamp1">timestamp1</td>
-    </tr>
-    <tr>
-      <td id="event_icon2" onLoad="AddImage();"></td>
-      <td id="event_text2">event2</td>
-      <td id="event_timestamp2">timestamp2</td>
-    </tr>
   </table>
 </div>
 
@@ -200,13 +217,13 @@
     </form>
   </div>
   <div id="tabs-3">
-    <table name="prescription-list">
-      <tr>
-        <td class="header">Drug Name</td>
-        <td class="header">Dosage</td>
-        <td class="header">Quantity Remaining</td>
-        <td class="header">Start Date</td>
-      </tr>
+    <table id="prescription-list">
+      <thead>
+        <th>Drug Name</th>
+        <th>Dosage</th>
+        <th>Quantity Remaining</th>
+        <th>Start Date</th>
+      </thead>
       <tr id="prescriptions">
       </tr>
     </table>
