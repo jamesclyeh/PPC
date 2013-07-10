@@ -11,8 +11,7 @@
 <script>
   $(document).ready(function() {
     $("#tabs").tabs();
-    $( "#datepicker1" ).datepicker();
-    $( "#datepicker2" ).datepicker();
+    $( ".datepicker" ).datepicker();
     eventcheck();
 
     $("#addpres").on("click",function(){
@@ -90,6 +89,29 @@
     });
   }
 
+  function updateprescriptionlist() {
+    $.ajax({
+        type: "GET",
+        url: "users/1/prescriptions",
+        success: (function(data) {
+          var array = objectify(data);
+          $('#prescriptions').empty();
+          for(key in array) {
+            $('#prescriptions').append('<td>' + array[key].drug + '</td>' +
+                                       '<td>' + array[key].dosage + '</td>' +
+                                       '<td>' + '99' +'</td>' +
+                                       '<td>' + array[key].start_date + '</td>');
+          }
+        }),
+        error: (function(xhr, status, errormsg) {
+          console.log(xhr);
+          console.log(status);
+          $('#errormsg').text(status + " " + errormsg);
+        })
+    });
+
+  }
+
 </script>
 </head>
 <body>
@@ -125,7 +147,7 @@
  <ul>
    <li><a href="#tabs-1">Add New Prescription</a></li>
    <li><a href="#tabs-2" onclick="updatedruglist()">Update Existing Prescription</a></li>
-   <li><a href="#tabs-3">Prescription List</a></li>
+   <li><a href="#tabs-3" onclick="updateprescriptionlist()">Prescription List</a></li>
  </ul>
  <div id="tabs-1">
     <form id="addform" method="get">
@@ -142,8 +164,8 @@
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="start_date" type="text" id="datepicker1" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="end_date" type="text" id="datepicker2" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="start_date" type="text" class="datepicker" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="end_date" type="text" class="datepicker" /></td></tr>
       </table>
       <div style="clear:both;"><br/></div>
       <p style="text-align:right;"><input id="addpres" type="button" value="Add New Prescription" /></p>
@@ -165,16 +187,24 @@
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="start_date" type="text" id="datepicker1" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="end_date" type="text" id="datepicker2" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input class="datepicker" name="start_date" type="text" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input class="datepicker" name="end_date" type="text" /></td></tr>
       </table>
       <div style="clear:both;"><br/></div>
       <p style="text-align:right;"><input id="updatepres" type="button" value="Update Prescription" /></p>
     </form>
   </div>
   <div id="tabs-3">
-   <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
-   <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+    <table name="prescription-list">
+      <tr>
+        <td class="header">Drug Name</td>
+        <td class="header">Dosage</td>
+        <td class="header">Quantity Remaining</td>
+        <td class="header">Start Date</td>
+      </tr>
+      <tr id="prescriptions">
+      </tr>
+    </table>
   </div>
 </div>
 
