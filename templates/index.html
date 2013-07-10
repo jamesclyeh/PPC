@@ -16,7 +16,7 @@
     eventcheck();
 
     $("#addpres").on("click",function(){
-      var querystring = $('#addform input').serialize() + $('#addform select').serialize();
+      var querystring = $('#addform input').serialize() + '&' + $('#addform select').serialize() + '&user_id=1';
 
       $.ajax({
         type: "POST",
@@ -25,6 +25,7 @@
         dataType: "json",
         success: (function(data) {
           alert("success");
+          console.log(data);
         }),
         error: (function(xhr, status, errormsg) {
           console.log(xhr);
