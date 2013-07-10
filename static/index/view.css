@@ -6,6 +6,19 @@ body{
     height: 100%;
 }
 
+#tabs{
+    position: relative;
+    margin: 10px;
+    top: 20px;
+}
+
+p {
+    color: #000000;
+    font: 16px Arial, sans-serif;
+    margin: 0;
+    text-align: left;
+}
+/* Banners */
 #banner
 {
     background: #EEEEEE;
@@ -15,6 +28,13 @@ body{
     padding: 0px;
     line-height: 100px;
 }
+
+#username{
+    margin-top: 0px;
+    margin-left: 20px;
+}
+
+/* Event Bulletin */
 
 #event_bulletin
 {
@@ -72,13 +92,25 @@ body{
     vertical-align: middle;
 }
 
-#tabs{
-    position: relative;
-    margin: 10px;
-    top: 20px;
+/* Forms */
+.formleft
+{
+    color: #000000;
+    font: 16px Arial, sans-serif;
+    width:50%;
+    float:left;
+    text-align: left;
 }
 
-#username{
-    margin-top: 0px;
-    margin-left: 20px;
+.formright
+{
+    color: #000000;
+    font: 16px Arial, sans-serif;
+    width:50%;
+    float:right;
+    text-align: left;
+}
+
+.button {
+    text-align: right;   
 }

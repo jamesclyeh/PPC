@@ -7,45 +7,69 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Prescription Modification</title>
-<script type="text/javascript">
-      (function($) {
-        $(document).ready(function() {
-          $("#tabs").tabs();
-          getusers();
-        });
 
-        function eventcheck(data) {
-          var array = {};
-          for(key in data) {
-            $.each(data[key], function(key,value) {
-              array[key] = value;
-            });
+<script>
+  $(document).ready(function() {
+    $("#tabs").tabs();
+    $( "#datepicker1" ).datepicker();
+    $( "#datepicker2" ).datepicker();
+    eventcheck();
+
+    $("#addpres").on("click",function(){
+      var querystring = $('#addform input').serialize() + $('#addform select').serialize();
+
+      $.ajax({
+        type: "POST",
+        url: "addPrescription",
+        data: querystring,
+        dataType: "json",
+        success: (function(data) {
+          alert("success");
+        }),
+        error: (function(xhr, status, errormsg) {
+          console.log(xhr);
+          console.log(status);
+          $('#errormsg').text(errormsg);
+        })
+      });
+    });
+  });
+
+  function objectify(data) {
+    var array = {};
+    for(key in data) {
+      $.each(data[key], function(key,value) {
+        array[key] = value;
+      });
+    }
+    return(array);
+  }
+
+  function eventcheck() {
+    $.ajax({
+        type: "GET",
+        url: "users/1/prescriptions",
+        success: (function(data) {
+          var array = objectify(data.Prescriptions);
+          var src = '';
+          if(array.initial_stock - array.stock < 5) {
+            src = '';
           }
-          return(array);
-        }
-        function getusers() {
-          $.ajax({
-              type: "GET",
-              url: "users/1/prescriptions",
-              contentType: "application/JSON",
-              complete: (function(data) {
-                var response = JSON.parse(data.responseText);
-                var array = eventcheck(response.Prescriptions);
-                var src = '';
-                if(array.initial_stock - array.stock < 5) {
-                  src = '';
-                }
-                else {
-                  src = '<img class="icon" src="../static/images/warning.png"/>';
-                }
-                alert(src);
-                $('#event_icon1').prepend(src);
-                $('#event_text1').text("Your current dosage for " + array.drug + " is " + array.dosage);
-                $('#event_timestamp1').text(array.end_date);
-              })
-          });
-        }
-      }) (jQuery);
+          else {
+            src = '<img class="icon" src="../static/images/warning.png"/>';
+          }
+          $('#event_icon1').prepend(src);
+          $('#event_text1').text("Your current dosage for " + array.drug + " is " + array.dosage);
+          $('#event_timestamp1').text(array.end_date);
+        }),
+        error: (function(xhr, status, errormsg) {
+          console.log(xhr);
+          console.log(status);
+          $('#errormsg').text(status + " " + errormsg);
+        })
+    });
+  }  
+
 </script>
 </head>
 <body>
@@ -72,14 +96,37 @@
   </table>
 </div>
 
+<!-- Error Messages -->
+<div id="error box" align="center" width="60%">
+  <p id="errormsg" style="color:red;margin:0;text-align:center;min-height:20px;"></p>
+</div>
 <div id="tabs">
        <ul>
-         <li><a href="#tabs-1">Nunc tincidunt</a></li>
-         <li><a href="#tabs-2">Proin dolor</a></li>
-         <li><a href="#tabs-3">Aenean lacinia</a></li>
+         <li><a href="#tabs-1">Add New Prescription</a></li>
+         <li><a href="#tabs-2">Update Existing Prescription</a></li>
+         <li><a href="#tabs-3">Prescription List</a></li>
        </ul>
        <div id="tabs-1">
-             <p> LOL <br/> <p> 
+          <form id="addform" method="get">
+            <table class="formleft">
+              <tr><td>Name of Medication: </td><td><input name="med_name" type="text" /><br/></td></tr>
+              <tr><td colspan="2">Dosage: </td></tr>
+              <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="med_quantity" type="text" /></td></tr>
+              <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td><select name="med_freq">
+                  <option value="daily" selected="selected">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="biweekly">Biweekly</option>
+                </select>
+              </td></tr>
+            </table>
+            <table class="formright">
+              <tr><td colspan="2">Schedule: </td></tr>
+              <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="med_startdate" type="text" id="datepicker1" /></td></tr>
+              <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="med_enddate" type="text" id="datepicker2" /></td></tr>
+            </table>
+            <div style="clear:both;"><br/></div>
+            <p style="text-align:right;"><input id="addpres" type="button" value="Add New Prescription" /></p>
+          </form>
        </div>
        <div id="tabs-2">
              <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
