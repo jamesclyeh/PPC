@@ -9,6 +9,7 @@
 <title>Prescription Modification</title>
 
 <script>
+  var prescriptions
   $(document).ready(function() {
     $("#tabs").tabs();
     $( ".datepicker" ).datepicker();
@@ -31,6 +32,10 @@
           $('#errormsg').text(errormsg);
         })
       });
+    });
+  $('#druglist').on('change', function() {
+    var index = this.selectedIndex - 1;
+    $('#update_med_name').val(prescriptions[index+1].drug);
     });
   });
 
@@ -74,11 +79,11 @@
         type: "GET",
         url: "users/1/prescriptions",
         success: (function(data) {
-          var array = objectify(data);
+          prescriptions = objectify(data);
           $('#druglist').empty();
           $('#druglist').append('<option value="" disabled selected>Select a drug...</option>');
-          for(key in array) {
-            $('#druglist').append('<option value="' + array[key].drug + '">' + array[key].drug +'</option>');
+          for(key in prescriptions) {
+            $('#druglist').append('<option value="' + prescriptions[key].drug + '">' + prescriptions[key].drug +'</option>');
           }
         }),
         error: (function(xhr, status, errormsg) {
@@ -175,9 +180,9 @@
     <p>Drug Name: <select id="druglist"></select><br/><br/></p>
     <form id="updateform" method="get">
       <table class="formleft">
-        <tr><td>Name of Medication: </td><td><input name="med_name" type="text" /><br/></td></tr>
+        <tr><td>Name of Medication: </td><td><input id="update_med_name" name="med_name" type="text" /><br/></td></tr>
         <tr><td colspan="2">Dosage: </td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="dosage" type="text" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input id="update_dosage" name="dosage" type="text" /></td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td><select name="consumption_interval">
             <option value="daily" selected="selected">Daily</option>
             <option value="weekly">Weekly</option>
@@ -187,8 +192,8 @@
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input class="datepicker" name="start_date" type="text" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input class="datepicker" name="end_date" type="text" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input id="update_start_date" class="datepicker" name="start_date" type="text" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input id="update_end_date" class="datepicker" name="end_date" type="text" /></td></tr>
       </table>
       <div style="clear:both;"><br/></div>
       <p style="text-align:right;"><input id="updatepres" type="button" value="Update Prescription" /></p>
