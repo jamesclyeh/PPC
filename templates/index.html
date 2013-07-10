@@ -68,7 +68,27 @@
           $('#errormsg').text(status + " " + errormsg);
         })
     });
-  }  
+  }
+
+  function updatedruglist() {
+    $.ajax({
+        type: "GET",
+        url: "users/1/prescriptions",
+        success: (function(data) {
+          var array = objectify(data);
+          $('#druglist').empty();
+          $('#druglist').append('<option value="" disabled selected>Select a drug...</option>');
+          for(key in array) {
+            $('#druglist').append('<option value="' + array[key].drug + '">' + array[key].drug +'</option>');
+          }
+        }),
+        error: (function(xhr, status, errormsg) {
+          console.log(xhr);
+          console.log(status);
+          $('#errormsg').text(status + " " + errormsg);
+        })
+    });
+  }
 
 </script>
 </head>
@@ -100,40 +120,62 @@
 <div id="error box" align="center" width="60%">
   <p id="errormsg" style="color:red;margin:0;text-align:center;min-height:20px;"></p>
 </div>
+
 <div id="tabs">
-       <ul>
-         <li><a href="#tabs-1">Add New Prescription</a></li>
-         <li><a href="#tabs-2">Update Existing Prescription</a></li>
-         <li><a href="#tabs-3">Prescription List</a></li>
-       </ul>
-       <div id="tabs-1">
-          <form id="addform" method="get">
-            <table class="formleft">
-              <tr><td>Name of Medication: </td><td><input name="med_name" type="text" /><br/></td></tr>
-              <tr><td colspan="2">Dosage: </td></tr>
-              <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="med_quantity" type="text" /></td></tr>
-              <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td><select name="med_freq">
-                  <option value="daily" selected="selected">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="biweekly">Biweekly</option>
-                </select>
-              </td></tr>
-            </table>
-            <table class="formright">
-              <tr><td colspan="2">Schedule: </td></tr>
-              <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="med_startdate" type="text" id="datepicker1" /></td></tr>
-              <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="med_enddate" type="text" id="datepicker2" /></td></tr>
-            </table>
-            <div style="clear:both;"><br/></div>
-            <p style="text-align:right;"><input id="addpres" type="button" value="Add New Prescription" /></p>
-          </form>
-       </div>
-       <div id="tabs-2">
-             <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
-           </div>
-           <div id="tabs-3">
-             <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
-             <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
-           </div>
-         </div>
+ <ul>
+   <li><a href="#tabs-1">Add New Prescription</a></li>
+   <li><a href="#tabs-2" onclick="updatedruglist()">Update Existing Prescription</a></li>
+   <li><a href="#tabs-3">Prescription List</a></li>
+ </ul>
+ <div id="tabs-1">
+    <form id="addform" method="get">
+      <table class="formleft">
+        <tr><td>Name of Medication: </td><td><input name="med_name" type="text" /><br/></td></tr>
+        <tr><td colspan="2">Dosage: </td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="dosage" type="text" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td><select name="consumption_interval">
+            <option value="daily" selected="selected">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Biweekly</option>
+          </select>
+        </td></tr>
+      </table>
+      <table class="formright">
+        <tr><td colspan="2">Schedule: </td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="start_date" type="text" id="datepicker1" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="end_date" type="text" id="datepicker2" /></td></tr>
+      </table>
+      <div style="clear:both;"><br/></div>
+      <p style="text-align:right;"><input id="addpres" type="button" value="Add New Prescription" /></p>
+    </form>
+ </div>
+ <div id="tabs-2">
+    <p>Drug Name: <select id="druglist"></select><br/><br/></p>
+    <form id="updateform" method="get">
+      <table class="formleft">
+        <tr><td>Name of Medication: </td><td><input name="med_name" type="text" /><br/></td></tr>
+        <tr><td colspan="2">Dosage: </td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="dosage" type="text" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td><select name="consumption_interval">
+            <option value="daily" selected="selected">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Biweekly</option>
+          </select>
+        </td></tr>
+      </table>
+      <table class="formright">
+        <tr><td colspan="2">Schedule: </td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="start_date" type="text" id="datepicker1" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="end_date" type="text" id="datepicker2" /></td></tr>
+      </table>
+      <div style="clear:both;"><br/></div>
+      <p style="text-align:right;"><input id="updatepres" type="button" value="Update Prescription" /></p>
+    </form>
+  </div>
+  <div id="tabs-3">
+   <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+   <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+  </div>
+</div>
+
 </body>
