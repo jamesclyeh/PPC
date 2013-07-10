@@ -40,6 +40,11 @@
       $('#update_med_name').val(prescriptions[index].drug);
     });
 
+    var texthtml='';
+    for(var i=1; i<25;i++) {
+      texthtml += '<option value="' + i + '">' + i + '</option>';
+    }
+    $('.num_dropdown').append(texthtml);
   });
 
   function objectify(data) {
@@ -142,9 +147,7 @@
           $('#errormsg').text(status + " " + errormsg);
         })
     });
-
   }
-
 </script>
 </head>
 <body>
@@ -178,11 +181,7 @@
         <tr><td>Name of Medication: </td><td><input name="med_name" type="text" /><br/></td></tr>
         <tr><td colspan="2">Dosage: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="dosage" type="text" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td><select name="consumption_interval">
-            <option value="daily" selected="selected">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="biweekly">Biweekly</option>
-          </select>
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="num_dropdown" name="consumption_interval"></select> hours
         </td></tr>
       </table>
       <table class="formright">
@@ -201,11 +200,7 @@
         <tr><td>Name of Medication: </td><td><input id="update_med_name" name="med_name" type="text" /><br/></td></tr>
         <tr><td colspan="2">Dosage: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input id="update_dosage" name="dosage" type="text" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td><select name="consumption_interval">
-            <option value="daily" selected="selected">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="biweekly">Biweekly</option>
-          </select>
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="num_dropdown" name="consumption_interval"></select> hours
         </td></tr>
       </table>
       <table class="formright">
