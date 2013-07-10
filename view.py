@@ -42,10 +42,19 @@ def getUserData(user_id):
 def updateInventory():
   prescription_id = request.json['prescription_id']
   refill_amount = request.json.get('refill', 0)
-  latest_record = db.session.query(models.DrugInventory).order_by(models.DrugInventory.time_stamp.desc())[0]
+  latest_record = db.session.query(models.DrugInventory)\
+    .filter(models.DrugInventory.prescription_id==prescription_id)\
+    .order_by(models.DrugInventory.time_stamp.asc())[0]
   prescription = Prescription.query.get(prescription_id)
   new_amount = latest_record.inventory + refill_amount if refill_amount else latest_record.inventory - prescription.dosage
   record = models.DrugInventory(prescription_id, new_amount, datetime.datetime.now())
   db.session.add(record)
   db.session.commit()
   return Response('', status=200)
+
+@app.route('/prescriptions/<int:prescription_id>/inventory', methods=['GET'])
+def getInventory(prescription_id):
+  latest_record = db.session.query(models.DrugInventory)\
+    .filter(models.DrugInventory.prescription_id==prescription_id)\
+    .order_by(models.DrugInventory.time_stamp.asc())[0]
+  return Response(str(latest_record.inventory), status=200)
