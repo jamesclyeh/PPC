@@ -40,8 +40,6 @@ def getUserData(user_id):
 
 @app.route('/updateInventory', methods=['PUT'])
 def updateInventory():
-  print '#$&$%^&*$%^&*('
-  print request
   prescription_id = request.json['prescription_id']
   refill_amount = request.json.get('refill', 0)
   latest_record = db.session.query(models.DrugInventory).order_by(models.DrugInventory.time_stamp.desc())[0]
