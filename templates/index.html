@@ -9,10 +9,11 @@
 <title>Prescription Modification</title>
 
 <script>
-  var prescriptions
+  var prescriptions;
+  var curr_inventory;
   $(document).ready(function() {
     $("#tabs").tabs();
-    $( ".datepicker" ).datepicker();
+    $(".datepicker").datepicker();
     eventcheck();
 
     $("#addpres").on("click",function(){
@@ -22,10 +23,10 @@
         type: "POST",
         url: "addPrescription",
         data: querystring,
-        dataType: "json",
         success: (function(data) {
           alert("success");
           console.log(data);
+          eventcheck();
         }),
         error: (function(xhr, status, errormsg) {
           console.log(xhr);
@@ -37,14 +38,31 @@
 
     $('#druglist').on('change', function() {
       var index = this.selectedIndex - 1;
-      $('#update_med_name').val(prescriptions[index].drug);
+      $('#update_drug').val(prescriptions[index].drug);
+      $('#update_dosage').val(prescriptions[index].dosage);
+      $('#update_consumption_interval').val(prescriptions[index].consumption_interval);
+      $('#update_start_date').val(prescriptions[index].start_date);
+      $('#update_end_date').val(prescriptions[index].end_date);
+      $('#update_starttime_hour').val(prescriptions[index].starttime_hour);
+      $('#update_starttime_minute').val(prescriptions[index].starttime_minute);
     });
 
-    var texthtml='';
+    //For the frequency option dropdown
+    var freq_option='';
     for(var i=1; i<25;i++) {
-      texthtml += '<option value="' + i + '">' + i + '</option>';
+      freq_option += '<option value="' + i + '">' + i + '</option>';
     }
-    $('.num_dropdown').append(texthtml);
+    $('.freq_option').append(freq_option);
+
+    //For the time dropdowns
+    var hour_option='', minute_option='';
+    for(var i=0; i<60;i++) {
+      if(i < 10) {minute_option += '<option value="0' + i + '">0' + i + '</option>';}
+      else {minute_option += '<option value="' + i + '">' + i + '</option>';}
+      if(i<24){hour_option += '<option value="' + i + '">' + i + '</option>';}
+    }
+    $('.hour_option').append(hour_option);
+    $('.minute_option').append(minute_option);
   });
 
   function objectify(data) {
@@ -77,12 +95,13 @@
         type: "GET",
         url: "users/1/prescriptions",
         success: (function(data) {
-          var prescriptions = objectify(data);
+          prescriptions = objectify(data);
           for(key in prescriptions) {
             $.ajax({
                 type: "GET",
                 url: "prescriptions/" + prescriptions[key].id + "/inventory",
                 success: (function(inventory) {
+                  curr_inventory = inventory;
                   if((inventory - prescriptions[key].dosage) < 0) {
                     eventnotice('error', prescriptions[key].drug, '0');
                   }
@@ -135,10 +154,11 @@
           var array = objectify(data);
           $('#prescriptions').empty();
           for(key in array) {
-            $('#prescriptions').append('<td>' + array[key].drug + '</td>' +
+            $('#prescriptions').append('<tr><td>' + array[key].drug + '</td>' +
                                        '<td>' + array[key].dosage + '</td>' +
-                                       '<td>' + '99' +'</td>' +
-                                       '<td>' + array[key].start_date + '</td>');
+                                       '<td>' + curr_inventory +'</td>' +
+                                       '<td>' + array[key].start_date + '</td>' +
+                                       '<td>' + array[key].end_date + '</td></tr>');
           }
         }),
         error: (function(xhr, status, errormsg) {
@@ -152,7 +172,8 @@
 </head>
 <body>
 <div width="100%" id="banner">
-  <h1 id ="username">Clarence Chow</h1>
+  <h1 id="username">Clarence Chow</h1>
+  <h1 id="company">PPC</h1>
 </div>
 
 <!-- Event Bulletin -->
@@ -164,11 +185,6 @@
   </table>
 </div>
 
-<!-- Error Messages -->
-<div id="error box" align="center" width="60%">
-  <p id="errormsg" style="color:red;margin:0;text-align:center;min-height:20px;"></p>
-</div>
-
 <div id="tabs">
  <ul>
    <li><a href="#tabs-1">Add New Prescription</a></li>
@@ -177,51 +193,68 @@
  </ul>
  <div id="tabs-1">
     <form id="addform" method="get">
+      <!-- Error Messages -->
+      <div id="errorbox" align="center" width="60%">
+        <p id="errormsg" style="color:red;margin:0;text-align:center;min-height:15px;"></p>
+      </div>
       <table class="formleft">
-        <tr><td>Name of Medication: </td><td><input name="med_name" type="text" /><br/></td></tr>
+        <tr><td>Name of Medication: </td><td><input name="drug" type="text" /><br/></td></tr>
         <tr><td colspan="2">Dosage: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="dosage" type="text" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="num_dropdown" name="consumption_interval"></select> hours
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="freq_option" name="consumption_interval"></select> hours
         </td></tr>
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input name="start_date" type="text" class="datepicker" /></td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input name="end_date" type="text" class="datepicker" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Start Time:</td><td><select class="hour_option" name="starttime_hour"></select>
+                                                      <select class="minute_option" name="starttime_minute"></select>
       </table>
       <div style="clear:both;"><br/></div>
       <p style="text-align:right;"><input id="addpres" type="button" value="Add New Prescription" /></p>
     </form>
  </div>
  <div id="tabs-2">
+    <!-- Error Messages -->
+    <div id="errorbox" align="center" width="60%">
+      <p id="errormsg" style="color:red;margin:0;text-align:center;min-height:15px;"></p>
+    </div>
     <p>Drug Name: <select id="druglist"></select><br/><br/></p>
     <form id="updateform" method="get">
       <table class="formleft">
-        <tr><td>Name of Medication: </td><td><input id="update_med_name" name="med_name" type="text" /><br/></td></tr>
+        <tr><td>Name of Medication: </td><td><input id="update_drug" name="drug" type="text" /><br/></td></tr>
         <tr><td colspan="2">Dosage: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input id="update_dosage" name="dosage" type="text" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="num_dropdown" name="consumption_interval"></select> hours
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="freq_option" id="update_consumption_interval"></select> hours
         </td></tr>
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Start Date: </td><td><input id="update_start_date" class="datepicker" name="start_date" type="text" /></td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;End Date: </td><td><input id="update_end_date" class="datepicker" name="end_date" type="text" /></td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Start Time:</td><td><select id="update_starttime_hour" class="hour_option" name="starttime_hour"></select>
+                                                      <select id="update_starttime_minute" class="minute_option" name="starttime_minute"></select>
       </table>
       <div style="clear:both;"><br/></div>
       <p style="text-align:right;"><input id="updatepres" type="button" value="Update Prescription" /></p>
     </form>
   </div>
   <div id="tabs-3">
-    <table id="prescription-list">
+    <!-- Error Messages -->
+    <div id="error box" align="center" width="60%">
+      <p id="errormsg" style="color:red;margin:0;text-align:center;min-height:15px;"></p>
+    </div>
+    <table id="prescription-list" align="center">
       <thead>
         <th>Drug Name</th>
         <th>Dosage</th>
         <th>Quantity Remaining</th>
         <th>Start Date</th>
+        <th>End Date</th>
       </thead>
-      <tr id="prescriptions">
-      </tr>
+      <tbody id="prescriptions">
+      </tbody>
     </table>
   </div>
 </div>

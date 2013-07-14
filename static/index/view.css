@@ -21,8 +21,8 @@ p {
 /* Banners */
 #banner
 {
-    background: #EEEEEE;
-    height: 100px;
+    background: #005186;
+    height: 80px;
     margin: 0px;
     border-bottom: 3px solid #000000;
     padding: 0px;
@@ -30,15 +30,25 @@ p {
 }
 
 #username{
-    margin-top: 0px;
+    color: #FFFFFF;
+    display: inline;
+    margin-top: 20px;
     margin-left: 20px;
+}
+
+#company {
+    color: #FFFFFF;
+    margin-top: 15px;
+    text-align: right;
+    font-size:18px;
+    float:right;
 }
 
 /* Event Bulletin */
 
 #event_bulletin
 {
-    background: #cccccc;
+    background: #dddddd;
     border: 3px solid #000000;
     min-height: 120px;
     margin: 16px 100px;
@@ -117,11 +127,22 @@ p {
 
 #prescription-list {
     border-spacing: 0;
+    min-width: 800px;
 }
 #prescription-list th {
-    background: #b9c9fe;
+    background: none repeat scroll 0 0 #cccccc;
+    border-bottom: 1px solid #000000;
 }
 
+#prescription-list tr {
+    text-align: center;
+}
 
+#prescription-list tbody tr:nth-child(even) {
+   background: #dddddd;
+}
 
-
+#prescription-list tbody tr:hover {
+    background: #005186;
+    color: #FFFFFF;
+}
