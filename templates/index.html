@@ -45,12 +45,12 @@
         contentType: "application/json",
         processData: false,
         async:false,
-        success: (function(data) {
+        success: (function(prescription_id) {
           $('#errormsg').text("Prescription added");
           $.ajax({
             type: "PUT",
             url: "prescription/updateInventory",
-            data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + data.Prescriptions[0].id))),
+            data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + prescription_id))),
             contentType: "application/json;",
             processData: false,
             success: (function(data) {
