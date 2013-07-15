@@ -59,6 +59,14 @@ def getInventory(prescription_id):
     .order_by(models.DrugInventory.time_stamp.asc())[0]
   return Response(str(latest_record.inventory), status=200)
 
+@app.route('/prescriptions/<int:prescription_id>/consumption_history', methods=['GET'])
+def getConsumptionHistory(prescription_id):
+  records = db.session.query(models.DrugInventory)\
+    .filter(models.DrugInventory.prescription_id==prescription_id)\
+    .order_by(models.DrugInventory.time_stamp.desc())
+  json_str = json.dumps({'ConsumptionHistory': [models.serialize(record) for record in records]}, default=models.custom_parse)
+  return Response(json_str, status=200, mimetype='application/json')
+
 @app.route('/prescription/<int:prescription_id>/update', methods=['POST'])
 def updatePrescription(prescription_id):
   record = models.Prescription.query.get(prescription_id)
