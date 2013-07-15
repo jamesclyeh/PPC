@@ -58,3 +58,21 @@ def getInventory(prescription_id):
     .filter(models.DrugInventory.prescription_id==prescription_id)\
     .order_by(models.DrugInventory.time_stamp.asc())[0]
   return Response(str(latest_record.inventory), status=200)
+
+@app.route('/prescription/<int:prescription_id>>/update', methods=['POST'])
+def updatePrescription(prescription_id):
+  record = models.Prescription.query.get(prescription_id)
+  for key, value in request.json.iteritems():
+    record[key] = value
+  db.session.save(record)
+  db.session.commit()
+  return Response('', status=200)
+
+@app.route('/prescription/insert', methods=['PUT'])
+def addPrescription():
+  record = models.Prescription()
+  for key, value in request.json.iteritems():
+    setattr(record, key, value)
+  db.session.add(record)
+  db.session.commit()
+  return Response('', status=200)
