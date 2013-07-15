@@ -9,6 +9,25 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Prescription Modification</title>
 
+<script type="text/javascript">
+  util = {
+      qsToObject: function (qs) {
+          var o = {};
+          qs.replace(
+              new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+              function ($0, $1, $2, $3) { o[$1] = $3; }
+              );
+          return o;
+      },
+      objectToQs: function (o) {
+          var str = [];
+          for (var k in o)
+              str.push(k + "=" + o[k]);
+          return str.join("&");
+      }
+  }
+</script>
+
 <script>
   var prescriptions;
   var curr_inventory;
@@ -18,16 +37,32 @@
     eventcheck();
 
     $("#addpres").on("click",function(){
-      var querystring = $('#addform input').serialize() + '&' + $('#addform select').serialize() + '&user_id=1';
-
+      var jsondata = util.qsToObject(unescape($('#addform input').serialize() + '&' + $('#addform select').serialize() + '&user_id=1'));
       $.ajax({
         type: "POST",
-        url: "addPrescription",
-        data: querystring,
+        url: "prescription/insert",
+        data: JSON.stringify(jsondata),
+        contentType: "application/json",
+        processData: false,
+        async:false,
         success: (function(data) {
-          alert("success");
-          console.log(data);
-          eventcheck();
+          $('#errormsg').text("Prescription added");
+          $.ajax({
+            type: "PUT",
+            url: "prescription/updateInventory",
+            data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + data.Prescriptions[0].id))),
+            contentType: "application/json;",
+            processData: false,
+            success: (function(data) {
+              alert("Success");
+              eventcheck();
+            }),
+            error: (function(xhr, status, errormsg) {
+              console.log(xhr);
+              console.log(status);
+              $('#errormsg').text(errormsg);
+            })
+          });  
         }),
         error: (function(xhr, status, errormsg) {
           console.log(xhr);
@@ -39,13 +74,25 @@
 
     $('#druglist').on('change', function() {
       var index = this.selectedIndex - 1;
-      $('#update_drug').val(prescriptions[index].drug);
-      $('#update_dosage').val(prescriptions[index].dosage);
-      $('#update_consumption_interval').val(prescriptions[index].consumption_interval);
-      $('#update_start_date').val(prescriptions[index].start_date);
-      $('#update_end_date').val(prescriptions[index].end_date);
-      $('#update_starttime_hour').val(prescriptions[index].starttime_hour);
-      $('#update_starttime_minute').val(prescriptions[index].starttime_minute);
+      $.ajax({
+          type: "GET",
+          url: "prescriptions/" + prescriptions[index].id + "/inventory",
+          success: (function(inventory) {
+            $('#update_drug').val(prescriptions[index].drug);
+            $('#update_dosage').val(prescriptions[index].dosage);
+            $('#update_consumption_interval').val(prescriptions[index].consumption_interval);
+            $('#update_refill').val(inventory);
+            $('#update_start_date').val(prescriptions[index].start_date);
+            $('#update_end_date').val(prescriptions[index].end_date);
+            $('#update_starttime_hour').val(prescriptions[index].starttime_hour);
+            $('#update_starttime_minute').val(prescriptions[index].starttime_minute);
+          }),
+          error: (function(xhr, status, errormsg) {
+            console.log(xhr);
+            console.log(status);
+            $('#errormsg').text(status + " " + errormsg);
+          })
+      });    
     });
 
     //For the frequency option dropdown
@@ -149,13 +196,14 @@
             $.ajax({
                 type: "GET",
                 url: "prescriptions/" + prescriptions[key].id + "/inventory",
+                async:false,
                 success: (function(inventory) {
                   curr_inventory = inventory;
                   if((inventory - prescriptions[key].dosage) < 0) {
                     eventnotice('error', prescriptions[key].drug, '0');
                   }
                   else if((inventory - 3*prescriptions[key].dosage) < 0) {
-                    eventnotice('warning', prescriptions[key].drug, inventory/prescriptions[key].dosage);
+                    eventnotice('warning', prescriptions[key].drug, parseInt(inventory/prescriptions[key].dosage));
                   }
                 }),
                 error: (function(xhr, status, errormsg) {
@@ -203,12 +251,24 @@
           var array = objectify(data);
           $('#prescriptions').empty();
           for(key in array) {
-            $('#prescriptions').append('<tr><td>' + array[key].drug + '</td>' +
+            $.ajax({
+                type: "GET",
+                url: "prescriptions/" + prescriptions[key].id + "/inventory",
+                async: false,
+                success: (function(inventory) {
+                  $('#prescriptions').append('<tr><td>' + array[key].drug + '</td>' +
                                        '<td>' + array[key].dosage + '</td>' +
                                        '<td>' + array[key].consumption_interval + '</td>' +
-                                       '<td>' + curr_inventory +'</td>' +
+                                       '<td>' + inventory +'</td>' +
                                        '<td>' + array[key].start_date + '</td>' +
                                        '<td>' + array[key].end_date + '</td></tr>');
+                }),
+                error: (function(xhr, status, errormsg) {
+                  console.log(xhr);
+                  console.log(status);
+                  $('#errormsg').text(status + " " + errormsg);
+                })
+              });
           }
         }),
         error: (function(xhr, status, errormsg) {
@@ -251,8 +311,8 @@
         <tr><td>Name of Medication: </td><td><input name="drug" type="text" /><br/></td></tr>
         <tr><td colspan="2">Dosage: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="dosage" type="text" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="freq_option" name="consumption_interval"></select> hours
-        </td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="freq_option" name="consumption_interval"></select> hours</td></tr>
+        <tr><td>Starting Quantity: </td><td><input id="add_refill" name="refill" type="text" /></td></tr>
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>
@@ -276,8 +336,8 @@
         <tr><td>Name of Medication: </td><td><input id="update_drug" name="drug" type="text" /><br/></td></tr>
         <tr><td colspan="2">Dosage: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input id="update_dosage" name="dosage" type="text" /></td></tr>
-        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="freq_option" id="update_consumption_interval"></select> hours
-        </td></tr>
+        <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="freq_option" id="update_consumption_interval"></select> hours</td></tr>
+        <tr><td>Starting Quantity: </td><td><input id="update_refill" name="refill" type="text" /></td></tr>
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>

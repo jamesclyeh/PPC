@@ -75,7 +75,7 @@ def getConsumptionHistory(prescription_id):
   json_str = json.dumps({'ConsumptionHistory': [models.serialize(record) for record in records]}, default=models.custom_parser)
   return Response(json_str, status=200, mimetype='application/json')
 
-@app.route('/prescription/<int:prescription_id>/update', methods=['POST'])
+@app.route('/prescription/<int:prescription_id>/update', methods=['PUT'])
 def updatePrescription(prescription_id):
   record = models.Prescription.query.get(prescription_id)
   for key, value in request.json.iteritems():
@@ -84,7 +84,7 @@ def updatePrescription(prescription_id):
   db.session.commit()
   return Response('', status=200)
 
-@app.route('/prescription/insert', methods=['PUT'])
+@app.route('/prescription/insert', methods=['POST'])
 def addPrescription():
   record = models.Prescription()
   for key, value in request.json.iteritems():

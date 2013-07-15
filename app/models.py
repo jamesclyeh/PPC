@@ -32,7 +32,7 @@ class Prescription(db.Model):
   end_date = db.Column(db.DateTime)
   __table_args__ = (db.UniqueConstraint('patient_id', 'drug'),)
 
-  def __init__(self, patient_id, caregiver_id, drug, consumption_interval, dosage, start_date, end_date):
+  def __init__(self, patient_id=1, caregiver_id=2, drug=None, consumption_interval=None, dosage=None, start_date=None, end_date=None):
     self.patient_id = patient_id
     self.caregiver_id = caregiver_id
     self.drug = drug
@@ -52,7 +52,7 @@ class ArchivedPrescription(db.Model):
   start_date = db.Column(db.DateTime)
   end_date = db.Column(db.DateTime)
 
-  def __init__(self, patient_id, caregiver_id, drug, consumption_interval, dosage, start_date, end_date):
+  def __init__(self, patient_id=1, caregiver_id=2, drug=None, consumption_interval=None, dosage=None, start_date=None, end_date=None):
     self.patient_id = patient_id
     self.caregiver_id = caregiver_id
     self.drug = drug
