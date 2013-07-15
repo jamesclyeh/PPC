@@ -112,55 +112,6 @@
     $('.hour_option').append(hour_option);
     $('.minute_option').append(minute_option);
 
-    $('#graph_cons_activity').highcharts({
-        chart: {
-            type: 'bar'
-        },
-        title: {
-            text: 'Recent Consumption Activity'
-        },
-        xAxis: {
-            categories: ['Apples', 'Bananas', 'Oranges']
-        },
-        yAxis: {
-            title: {
-                text: 'Fruit eaten'
-            }
-        },
-        series: [{
-            name: 'Jane',
-            data: [1, 0, 4]
-        }, {
-            name: 'John',
-            data: [5, 7, 3]
-        }]
-    });
-
-    $('#graph_hist_data').highcharts({
-        chart: {
-            type: 'line'
-        },
-        title: {
-            text: 'Historical Consumption Data'
-        },
-        xAxis: {
-            categories: ['Apples', 'Bananas', 'Oranges']
-        },
-        yAxis: {
-            title: {
-                text: 'Fruit eaten'
-            }
-        },
-        series: [{
-            name: 'Jane',
-            data: [1, 0, 4]
-        }, {
-            name: 'John',
-            data: [5, 7, 3]
-        }]
-    });
-  });
-
   function objectify(data) {
     var array = {};
     for(key in data) {
@@ -196,8 +147,9 @@
             $.ajax({
                 type: "GET",
                 url: "prescriptions/" + prescriptions[key].id + "/inventory",
-                async:false,
+                async: false,
                 success: (function(inventory) {
+                  prescriptions[key].inventory = inventory;
                   curr_inventory = inventory;
                   if((inventory - prescriptions[key].dosage) < 0) {
                     eventnotice('error', prescriptions[key].drug, '0');
@@ -211,8 +163,9 @@
                   console.log(status);
                   $('#errormsg').text(status + " " + errormsg);
                 })
-            });    
+            });
           }
+          updateInventoryChart();
         }),
         error: (function(xhr, status, errormsg) {
           console.log(xhr);
@@ -220,7 +173,6 @@
           $('#errormsg').text(status + " " + errormsg);
         })
     });
-    
   }
 
   function updatedruglist() {
@@ -242,6 +194,60 @@
         })
     });
   }
+
+  function updateInventoryChart() {
+    var drug_names = new Array();
+    var drug_inventory = new Array();
+    for(index in prescriptions){
+      drug_names.push(prescriptions[index].drug);
+      drug_inventory.push(parseInt(prescriptions[index].inventory));
+    }
+
+    $('#graph_cons_activity').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Stash'
+        },
+        xAxis: {
+            categories: drug_names
+        },
+        yAxis: {
+            title: {
+                text: 'Joints left'
+            }
+        },
+        series: [{
+            name: 'Clarence Chow',
+            data: drug_inventory,
+        }]
+    });
+  }
+  $('#graph_hist_data').highcharts({
+      chart: {
+          type: 'line'
+      },
+      title: {
+          text: 'Historical Consumption Data'
+      },
+      xAxis: {
+          categories: ['Apples', 'Bananas', 'Oranges']
+      },
+      yAxis: {
+          title: {
+              text: 'Fruit eaten'
+          }
+      },
+      series: [{
+          name: 'Jane',
+          data: [1, 0, 4]
+      }, {
+          name: 'John',
+          data: [5, 7, 3]
+      }]
+  });
+  });
 
   function updateprescriptionlist() {
     $.ajax({
