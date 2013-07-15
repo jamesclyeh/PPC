@@ -59,7 +59,7 @@ def getInventory(prescription_id):
     .order_by(models.DrugInventory.time_stamp.asc())[0]
   return Response(str(latest_record.inventory), status=200)
 
-@app.route('/prescription/<int:prescription_id>>/update', methods=['POST'])
+@app.route('/prescription/<int:prescription_id>/update', methods=['POST'])
 def updatePrescription(prescription_id):
   record = models.Prescription.query.get(prescription_id)
   for key, value in request.json.iteritems():
