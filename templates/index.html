@@ -1,8 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <link rel="stylesheet" type="text/css" href="../static/index/view.css" media="all">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -63,6 +64,54 @@
     }
     $('.hour_option').append(hour_option);
     $('.minute_option').append(minute_option);
+
+    $('#graph_cons_activity').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Recent Consumption Activity'
+        },
+        xAxis: {
+            categories: ['Apples', 'Bananas', 'Oranges']
+        },
+        yAxis: {
+            title: {
+                text: 'Fruit eaten'
+            }
+        },
+        series: [{
+            name: 'Jane',
+            data: [1, 0, 4]
+        }, {
+            name: 'John',
+            data: [5, 7, 3]
+        }]
+    });
+
+    $('#graph_hist_data').highcharts({
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: 'Historical Consumption Data'
+        },
+        xAxis: {
+            categories: ['Apples', 'Bananas', 'Oranges']
+        },
+        yAxis: {
+            title: {
+                text: 'Fruit eaten'
+            }
+        },
+        series: [{
+            name: 'Jane',
+            data: [1, 0, 4]
+        }, {
+            name: 'John',
+            data: [5, 7, 3]
+        }]
+    });
   });
 
   function objectify(data) {
@@ -258,5 +307,11 @@
     </table>
   </div>
 </div>
-
+<div style="clear:both;"><br/></div>
+<div id="graphs">
+  <div id="graph_cons_activity" style="float:left;width:50%;height:200px"></div>
+  <div id="graph_hist_data" style="float:right;width:50%;height:200px"></div>
+</div>
+<div style="clear:both;height:100px"><br/></div>
 </body>
+</html>
