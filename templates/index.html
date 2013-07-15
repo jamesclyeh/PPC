@@ -205,6 +205,7 @@
           for(key in array) {
             $('#prescriptions').append('<tr><td>' + array[key].drug + '</td>' +
                                        '<td>' + array[key].dosage + '</td>' +
+                                       '<td>' + array[key].consumption_interval + '</td>' +
                                        '<td>' + curr_inventory +'</td>' +
                                        '<td>' + array[key].start_date + '</td>' +
                                        '<td>' + array[key].end_date + '</td></tr>');
