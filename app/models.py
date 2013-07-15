@@ -69,7 +69,7 @@ class DrugInventory(db.Model):
   time_stamp = db.Column(db.DateTime)
 
   def __init__(self, prescription_id, inventory, date):
-    self.presciption_id = prescription_id
+    self.prescription_id = prescription_id
     self.inventory = inventory
     self.time_stamp = date
 

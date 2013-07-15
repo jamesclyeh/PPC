@@ -40,7 +40,7 @@ def getUserData(user_id):
 
 @app.route('/updateInventory', methods=['PUT'])
 def updateInventory():
-  prescription_id = request.json['prescription_id']
+  prescription_id = int(request.json['prescription_id'])
   refill_amount = request.json.get('refill', 0)
   records = db.session.query(models.DrugInventory)\
     .filter(models.DrugInventory.prescription_id==prescription_id)\
@@ -52,12 +52,13 @@ def updateInventory():
   new_amount = current_inventory + refill_amount if refill_amount else None
   if latest_record:
     new_amount = current_inventory - prescription.dosage
+  print new_amount
   if new_amount:
     prescription = Prescription.query.get(prescription_id)
     record = models.DrugInventory(prescription_id, new_amount, datetime.datetime.now())
     db.session.add(record)
     db.session.commit()
-  return Response('', status=200)
+    return Response(str(record.prescription_id) + ':' + str(record.inventory), status=200)
 
 @app.route('/prescriptions/<int:prescription_id>/inventory', methods=['GET'])
 def getInventory(prescription_id):
