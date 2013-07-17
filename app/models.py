@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from app import db
 from sqlalchemy.orm import class_mapper
@@ -95,4 +96,5 @@ def custom_parser(obj):
   if isinstance(obj, datetime.datetime):
     if obj.utcoffset() is not None:
       obj = obj - obj.utcoffset()
-  return '%s/%s/%s' % (obj.year, obj.month, obj.day)
+#  return '%s/%s/%s' % (obj.year, obj.month, obj.day)
+  return time.mktime(obj.timetuple())

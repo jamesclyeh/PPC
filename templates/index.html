@@ -37,7 +37,7 @@ $(document).ready(function() {
   $("#tabs").tabs();
   $(".datepicker").datepicker();
   eventcheck();
-
+  
   $("#addpres").on("click",function(){
     var jsondata = util.qsToObject(unescape($('#addform input').serialize() + '&' + $('#addform select').serialize() + '&user_id=1'));
     $.ajax({
@@ -149,32 +149,8 @@ $(document).ready(function() {
     if(i<24){hour_option += '<option value="' + i + '">' + i + '</option>';}
   }
   $('.hour_option').append(hour_option);
-  $('.minute_option').append(minute_option);
-
-  $('#graph_hist_data').highcharts({
-    chart: {
-      type: 'line'
-    },
-    title: {
-      text: 'Historical Consumption Data'
-    },
-    xAxis: {
-      categories: ['Apples', 'Bananas', 'Oranges']
-    },
-    yAxis: {
-      title: {
-        text: 'Fruit eaten'
-      }
-    },
-    series: [{
-      name: 'Jane',
-      data: [1, 0, 4]
-    }, {
-      name: 'John',
-      data: [5, 7, 3]
-    }]
-  });
 });
+
 function objectify(data) {
   var array = {};
   for(key in data) {
@@ -184,6 +160,7 @@ function objectify(data) {
   }
   return(array);
 }
+
 function eventnotice(status,drug,remaining_dosage) {
   var texthtml = "<tr>";
   if(status == 'error') {
@@ -200,6 +177,7 @@ function eventnotice(status,drug,remaining_dosage) {
   $('#event_table').append(texthtml);
 
 }
+
 function eventcheck() {
   $.ajax({
     type: "GET",
@@ -255,6 +233,62 @@ function updatedruglist() {
       console.log(status);
       $('#errormsg').text(status + " " + errormsg);
     })
+  });
+}
+
+function updateHistoricalConsumptionChart() {
+  for(key in prescriptions) {
+    $.ajax({
+      type: "GET",
+      url: "/prescriptions/" + prescriptions[key].id + "/consumption_history",
+      async: false,
+      success: (function(historical_data) {
+        prescriptions[key].historical_data = historical_data;
+      }),
+      error: (function(xhr, status, errormsg) {
+        console.log(xhr);
+        console.log(status);
+        $('#errormsg').text(status + " " + errormsg);
+      })
+    });
+  }
+
+  var dataArray = new Array();
+  for(index in prescriptions){
+    var dataPoints = new Array();
+    for(index2 in prescriptions[index].historical_data['ConsumptionHistory']){
+      var dataPoint = new Array();
+      dataPoint[0] = prescriptions[index].historical_data['ConsumptionHistory'][index2].time_stamp * 1000;
+      dataPoint[1] = prescriptions[index].historical_data['ConsumptionHistory'][index2].inventory;
+      dataPoints.push(dataPoint);
+    }
+    dataArray.push({name: prescriptions[index].drug, data: dataPoints});
+  }
+
+  $('#graph_hist_data').highcharts({
+    chart: {
+      type: 'line'
+    },
+    title: {
+      text: 'Historical Consumption Data'
+    },
+    subtitle: {
+      text: 'Clarence Chow'
+    },
+    xAxis: {
+      type: 'datetime',
+      labels: {
+        formatter: function() {
+          return Highcharts.dateFormat('%a %d %b %H', this.value);
+        }
+      }
+    },
+    yAxis: {
+      title: {
+        text: 'Drugs left'
+      }
+    },
+    series: dataArray
   });
 }
 
@@ -315,6 +349,7 @@ function updateprescriptionlist() {
           })
         });
       }
+      updateHistoricalConsumptionChart();
     }),
     error: (function(xhr, status, errormsg) {
       console.log(xhr);

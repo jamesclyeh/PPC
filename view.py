@@ -41,6 +41,7 @@ def getUserData(user_id):
 @app.route('/updateInventory', methods=['PUT'])
 def updateInventory():
   prescription_id = int(request.json['prescription_id'])
+  prescription = models.Prescription.query.get(prescription_id)
   refill_amount = request.json.get('refill', 0)
   records = db.session.query(models.DrugInventory)\
     .filter(models.DrugInventory.prescription_id==prescription_id)\
