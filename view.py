@@ -65,7 +65,7 @@ def updateInventory():
 def getInventory(prescription_id):
   latest_record = db.session.query(models.DrugInventory)\
     .filter(models.DrugInventory.prescription_id==prescription_id)\
-    .order_by(models.DrugInventory.time_stamp.asc())[0]
+    .order_by(models.DrugInventory.time_stamp.desc())[0]
   return Response(str(latest_record.inventory), status=200)
 
 @app.route('/prescriptions/<int:prescription_id>/consumption_history', methods=['GET'])
