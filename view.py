@@ -80,7 +80,7 @@ def getConsumptionHistory(prescription_id):
 def updatePrescription(prescription_id):
   record = models.Prescription.query.get(prescription_id)
   for key, value in request.json.iteritems():
-    record[key] = value
+    setattr(record, key, value)
   db.session.save(record)
   db.session.commit()
   return Response('', status=200)
