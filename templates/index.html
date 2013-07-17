@@ -37,6 +37,7 @@ $(document).ready(function() {
   $("#tabs").tabs();
   $(".datepicker").datepicker();
   eventcheck();
+  updateprescriptionlist();
   
   $("#addpres").on("click",function(){
     var jsondata = util.qsToObject(unescape($('#addform input').serialize() + '&' + $('#addform select').serialize() + '&user_id=1'));
