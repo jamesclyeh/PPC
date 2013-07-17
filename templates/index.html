@@ -28,9 +28,11 @@
   }
   </script>
 </head>
+
 <script>
 var prescriptions;
 var curr_inventory;
+var curr_index;
 $(document).ready(function() {
   $("#tabs").tabs();
   $(".datepicker").datepicker();
@@ -41,6 +43,42 @@ $(document).ready(function() {
     $.ajax({
       type: "POST",
       url: "prescription/insert",
+      data: JSON.stringify(jsondata),
+      contentType: "application/json",
+      processData: false,
+      async:false,
+      success: (function(prescription_id) {
+        $('#errormsg').text("Prescription added");
+        $.ajax({
+          type: "PUT",
+          url: "prescription/updateInventory",
+          data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + prescription_id))),
+          contentType: "application/json;",
+          processData: false,
+          success: (function(data) {
+            alert("Success");
+            eventcheck();
+          }),
+          error: (function(xhr, status, errormsg) {
+            console.log(xhr);
+            console.log(status);
+            $('#errormsg').text(errormsg);
+          })
+        });  
+      }),
+      error: (function(xhr, status, errormsg) {
+        console.log(xhr);
+        console.log(status);
+        $('#errormsg').text(errormsg);
+      })
+    });
+  });
+
+  $("#updatepres").on("click",function(){
+    var jsondata = util.qsToObject(unescape($('#updateform input').serialize() + '&' + $('#updateform select').serialize() + '&user_id=1'));
+    $.ajax({
+      type: "PUT",
+      url: "prescription/" + prescriptions[curr_index].id + "/update",
       data: JSON.stringify(jsondata),
       contentType: "application/json",
       processData: false,
@@ -92,7 +130,8 @@ $(document).ready(function() {
         console.log(status);
         $('#errormsg').text(status + " " + errormsg);
       })
-    });    
+    }); 
+    curr_index = index;   
   });
 
   //For the frequency option dropdown
@@ -382,4 +421,4 @@ function updateprescriptionlist() {
     </div>
     <div style="clear:both;height:100px"><br/></div>
   </body>
-  </html>
+</html>
