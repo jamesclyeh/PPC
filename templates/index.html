@@ -43,6 +43,21 @@ $(document).ready(function() {
   $(".datepicker").datepicker();
   eventcheck();
   updateprescriptionlist();
+
+  $.ajax({
+    type: "GET",
+      url: "users/1",
+      success: (function(data) {
+        $('#user_info').append('<h2 style="margin:0px;">'+ data.User.name + "</h2>" +
+                                "<p>Age: 21 <br />Gender: Male <br/><br/>" + 
+                                "Tel: " + data.User.phone_number + "<br />" +
+                                "Email: " + data.User.email + "<br />");}),
+      error: (function(xhr, status, errormsg) {
+        console.log(xhr);
+        console.log(status);
+        $('#errormsg').text(status + " " + errormsg);
+      })
+    });
   
   $("#addpres").on("click",function(){
     var jsondata = util.qsToObject(unescape($('#addform input').serialize() + '&' + $('#addform select').serialize() + '&user_id=1'));
@@ -155,6 +170,7 @@ $(document).ready(function() {
     if(i<24){hour_option += '<option value="' + i + '">' + i + '</option>';}
   }
   $('.hour_option').append(hour_option);
+  $('.minute_option').append(minute_option);
 });
 
 function objectify(data) {
@@ -176,8 +192,7 @@ function eventnotice(status,drug,remaining_dosage) {
   }
   else if(status == 'warning') {
     texthtml += '<td><img class="icon" src="../static/images/warning.png"/></td>' +
-    '<td>Prescription for ' + drug + ' is low, ' + remaining_dosage + ' more dosages left.</td>' +
-    '<td>insert time</td>';
+    '<td>Prescription for ' + drug + ' is low, ' + remaining_dosage + ' more dosages left.</td>';
   }
   texthtml += "</tr>";
   $('#event_table').append(texthtml);
@@ -372,16 +387,23 @@ function updateprescriptionlist() {
     <h1 id="username">Clarence Chow</h1>
     <h1 id="company">PPC: Patient Prescription Care</h1>
   </div>
-
-  <!-- Event Bulletin -->
-  <div id="event_bulletin">
-    <div id="event_title">
-      <h4 id="event_title_text">Event Bulletin</h4>
+  <table style="margin:10px;"><tr><td>
+    <div style="float:left;">
+      <img src="../static/images/clarencepic.png" style="display:inline-block;"/>
     </div>
-    <table id="event_table">
-    </table>
-  </div>
-
+  </td><td style="vertical-align:top;">
+    <div id="user_info"></div>
+  </td><td>
+        <!-- Event Bulletin -->
+    <div id="event_bulletin">
+        <div id="event_title">
+        <h4 id="event_title_text">Event Bulletin</h4>
+      </div>
+      <table id="event_table">
+      </table>
+    </div>
+  </td></tr></table>
+  <div style="clear:both;height:1px"><br/></div>
   <div id="tabs">
    <ul>
      <li><a href="#tabs-1">Add New Prescription</a></li>
@@ -458,8 +480,9 @@ function updateprescriptionlist() {
     </div>
     <div style="clear:both;"><br/></div>
     <div id="graphs">
-      <div id="graph_cons_activity" style="float:left;width:50%;height:200px"></div>
-      <div id="graph_hist_data" style="float:right;width:50%;height:200px"></div>
+      <div id="graph_cons_activity"></div>
+      <div id="spacer" style="display:inline;width:5%;">&nbsp;</div>
+      <div id="graph_hist_data"></div>
     </div>
     <div style="clear:both;height:100px"><br/></div>
   </body>
