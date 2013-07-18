@@ -137,12 +137,14 @@ $(document).ready(function() {
       type: "GET",
       url: "prescriptions/" + prescriptions[index].id + "/inventory",
       success: (function(inventory) {
+        startdate = new Date(prescriptions[index].start_date*1000);
+        enddate = new Date(prescriptions[index].end_date*1000);
         $('#update_drug').val(prescriptions[index].drug);
         $('#update_dosage').val(prescriptions[index].dosage);
         $('#update_consumption_interval').val(prescriptions[index].consumption_interval);
         $('#update_refill').val(inventory);
-        $('#update_start_date').val(prescriptions[index].start_date);
-        $('#update_end_date').val(prescriptions[index].end_date);
+        $('#update_start_date').val(startdate.toLocaleDateString());
+        $('#update_end_date').val(startdate.toLocaleDateString());
         $('#update_starttime_hour').val(prescriptions[index].starttime_hour);
         $('#update_starttime_minute').val(prescriptions[index].starttime_minute);
       }),
@@ -357,12 +359,14 @@ function updateprescriptionlist() {
           url: "prescriptions/" + prescriptions[key].id + "/inventory",
           async: false,
           success: (function(inventory) {
+            startdate = new Date(array[key].start_date*1000);
+            enddate = new Date(array[key].end_date*1000);
             $('#prescriptions').append('<tr><td>' + array[key].drug + '</td>' +
              '<td>' + array[key].dosage + '</td>' +
              '<td>' + array[key].consumption_interval + '</td>' +
              '<td>' + inventory +'</td>' +
-             '<td>' + array[key].start_date + '</td>' +
-             '<td>' + array[key].end_date + '</td></tr>');
+             '<td>' + startdate.toLocaleDateString() + ' ' + startdate.toLocaleTimeString() + '</td>' +
+             '<td>' + enddate.toLocaleDateString() + ' ' + enddate.toLocaleTimeString() + '</td></tr>');
           }),
           error: (function(xhr, status, errormsg) {
             console.log(xhr);
