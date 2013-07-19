@@ -189,8 +189,7 @@ function eventnotice(status,drug,remaining_dosage) {
   var texthtml = "<tr>";
   if(status == 'error') {
     texthtml += '<td><img class="icon" src="../static/images/error.png"/></td>' +
-    '<td>Prescription for ' + drug + ' is empty. Please refill immediately.</td>' +
-    '<td>insert time</td>';
+    '<td>Prescription for ' + drug + ' is empty. Please refill immediately.</td>';
   }
   else if(status == 'warning') {
     texthtml += '<td><img class="icon" src="../static/images/warning.png"/></td>' +
