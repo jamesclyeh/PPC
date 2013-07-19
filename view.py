@@ -54,12 +54,12 @@ def updateInventory():
   if latest_record:
     new_amount = current_inventory - prescription.dosage
   print new_amount
-  if new_amount:
+  if new_amount is not None:
     prescription = Prescription.query.get(prescription_id)
     record = models.DrugInventory(prescription_id, new_amount, datetime.datetime.now())
     db.session.add(record)
     db.session.commit()
-    return Response(str(record.prescription_id) + ':' + str(record.inventory), status=200)
+  return Response(str(record.prescription_id) + ':' + str(record.inventory), status=200)
 
 @app.route('/prescriptions/<int:prescription_id>/inventory', methods=['GET'])
 def getInventory(prescription_id):
