@@ -45,7 +45,7 @@ def updateInventory():
   refill_amount = request.json.get('refill', 0)
   records = db.session.query(models.DrugInventory)\
     .filter(models.DrugInventory.prescription_id==prescription_id)\
-    .order_by(models.DrugInventory.time_stamp.asc()).all()
+    .order_by(models.DrugInventory.time_stamp.desc()).all()
   latest_record = None
   if len(records) > 0:
     latest_record = records[0]
