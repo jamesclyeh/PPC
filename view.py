@@ -50,9 +50,11 @@ def updateInventory():
   if len(records) > 0:
     latest_record = records[0]
   current_inventory = latest_record.inventory if latest_record else 0
-  new_amount = current_inventory + int(refill_amount) if refill_amount else None
-  if latest_record:
+  if refill_amount:
+    new_amount = current_inventory + int(refill_amount)
+  elif latest_record:
     new_amount = current_inventory - prescription.dosage
+  else: None
   print new_amount
   if new_amount is not None:
     prescription = Prescription.query.get(prescription_id)

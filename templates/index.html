@@ -39,6 +39,23 @@ var prescriptions;
 var curr_inventory;
 var curr_index;
 $(document).ready(function() {
+  $.ajax({
+          type: "PUT",
+          url: "updateInventory",
+          data: JSON.stringify(util.qsToObject(unescape('refill=20' + '&prescription_id=7'))),
+          contentType: "application/json;",
+          processData: false,
+          success: (function(data) {
+            alert("Success, prescription added.");
+            eventcheck();
+          }),
+          error: (function(xhr, status, errormsg) {
+            console.log(xhr);
+            console.log(status);
+            $('#errormsg').text(errormsg);
+          })
+        });  
+
   $("#tabs").tabs();
   $(".datepicker").datepicker();
   eventcheck();
@@ -70,7 +87,6 @@ $(document).ready(function() {
       processData: false,
       async:false,
       success: (function() {
-        $('#errormsg').text("Prescription added");
         $.ajax({
           type: "GET",
           url: "users/1/prescriptions",
@@ -85,6 +101,7 @@ $(document).ready(function() {
             $('#errormsg').text(errormsg);
           })
         });  
+        console.log(.)
         $.ajax({
           type: "PUT",
           url: "updateInventory",
@@ -124,7 +141,7 @@ $(document).ready(function() {
         $.ajax({
           type: "PUT",
           url: "updateInventory",
-          data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + prescriptions[curr_index].id))),
+          data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#update_refill').val() + '&prescription_id=' + prescriptions[curr_index].id))),
           contentType: "application/json;",
           processData: false,
           success: (function(data) {
@@ -227,6 +244,7 @@ function eventcheck() {
           url: "prescriptions/" + prescriptions[key].id + "/inventory",
           async: false,
           success: (function(inventory) {
+            $('#event_table').innerHTML = '';
             prescriptions[key].inventory = inventory;
             curr_inventory = inventory;
             if((inventory - prescriptions[key].dosage) < 0) {
@@ -439,7 +457,7 @@ function updateprescriptionlist() {
         <tr><td colspan="2">Dosage: </td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Quantity: </td><td><input name="dosage" type="text" /></td></tr>
         <tr><td>&nbsp;&nbsp;&nbsp;Frequency: </td><td>Every <select class="freq_option" name="consumption_interval"></select> hours</td></tr>
-        <tr><td>Starting Quantity: </td><td><input id="add_refill" name="refill" type="text" /></td></tr>
+        <tr><td>Add Quantity: </td><td><input id="add_refill" name="refill" type="text" /></td></tr>
       </table>
       <table class="formright">
         <tr><td colspan="2">Schedule: </td></tr>
