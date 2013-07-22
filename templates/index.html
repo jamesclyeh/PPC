@@ -87,7 +87,7 @@ $(document).ready(function() {
         });  
         $.ajax({
           type: "PUT",
-          url: "prescription/updateInventory",
+          url: "updateInventory",
           data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + newPrescription.id))),
           contentType: "application/json;",
           processData: false,
@@ -123,7 +123,7 @@ $(document).ready(function() {
         $('#errormsg').text("Prescription added");
         $.ajax({
           type: "PUT",
-          url: "prescription/updateInventory",
+          url: "updateInventory",
           data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + prescriptions[curr_index].id))),
           contentType: "application/json;",
           processData: false,
