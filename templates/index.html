@@ -39,23 +39,6 @@ var prescriptions;
 var curr_inventory;
 var curr_index;
 $(document).ready(function() {
-  $.ajax({
-          type: "PUT",
-          url: "updateInventory",
-          data: JSON.stringify(util.qsToObject(unescape('refill=20' + '&prescription_id=7'))),
-          contentType: "application/json;",
-          processData: false,
-          success: (function(data) {
-            alert("Success, prescription added.");
-            eventcheck();
-          }),
-          error: (function(xhr, status, errormsg) {
-            console.log(xhr);
-            console.log(status);
-            $('#errormsg').text(errormsg);
-          })
-        });  
-
   $("#tabs").tabs();
   $(".datepicker").datepicker();
   eventcheck();
