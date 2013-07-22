@@ -60,6 +60,7 @@ $(document).ready(function() {
     });
   
   $("#addpres").on("click",function(){
+    var newPrescription;
     var jsondata = util.qsToObject(unescape($('#addform input').serialize() + '&' + $('#addform select').serialize() + '&user_id=1'));
     $.ajax({
       type: "POST",
@@ -68,16 +69,30 @@ $(document).ready(function() {
       contentType: "application/json",
       processData: false,
       async:false,
-      success: (function(prescription_id) {
+      success: (function() {
         $('#errormsg').text("Prescription added");
+        $.ajax({
+          type: "GET",
+          url: "users/1/prescriptions",
+          processData: false,
+          async:false,
+          success: (function(data) {
+            newPrescription = data.Prescriptions[Object.keys(data.Prescriptions).sort().pop()];
+          }),
+          error: (function(xhr, status, errormsg) {
+            console.log(xhr);
+            console.log(status);
+            $('#errormsg').text(errormsg);
+          })
+        });  
         $.ajax({
           type: "PUT",
           url: "prescription/updateInventory",
-          data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + prescription_id))),
+          data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + newPrescription.id))),
           contentType: "application/json;",
           processData: false,
           success: (function(data) {
-            alert("Success");
+            alert("Success, prescription added.");
             eventcheck();
           }),
           error: (function(xhr, status, errormsg) {
@@ -104,16 +119,16 @@ $(document).ready(function() {
       contentType: "application/json",
       processData: false,
       async:false,
-      success: (function(prescription_id) {
+      success: (function() {
         $('#errormsg').text("Prescription added");
         $.ajax({
           type: "PUT",
           url: "prescription/updateInventory",
-          data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + prescription_id))),
+          data: JSON.stringify(util.qsToObject(unescape('refill='+ $('#add_refill').val() + '&prescription_id=' + prescriptions[curr_index].id))),
           contentType: "application/json;",
           processData: false,
           success: (function(data) {
-            alert("Success");
+            alert("Success, prescription updated.");
             eventcheck();
           }),
           error: (function(xhr, status, errormsg) {
@@ -355,7 +370,7 @@ function updateprescriptionlist() {
       for(key in array) {
         $.ajax({
           type: "GET",
-          url: "prescriptions/" + prescriptions[key].id + "/inventory",
+          url: "prescriptions/" + array[key].id + "/inventory",
           async: false,
           success: (function(inventory) {
             startdate = new Date(array[key].start_date*1000);
@@ -387,7 +402,7 @@ function updateprescriptionlist() {
 
 <body>
   <div width="100%" id="banner">
-    <h1 id="username">Clarence Chow</h1>
+    <h1 id="username">Jun-Pei Chow</h1>
     <h1 id="company">PPC: Patient Prescription Care</h1>
   </div>
   <table style="margin:10px;"><tr><td>
